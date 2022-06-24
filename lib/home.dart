@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'companent.dart';
 import 'cubit/cubit.dart';
+import 'cubit/cubitstat.dart';
 
 class Home extends StatelessWidget {
   @override
-  late Database dataBase;
   var scafoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
-  bool isBottomSheetShown = false;
 
   // List<Map> taskes = []; error
-
-  IconData fabicon = Icons.edit;
   var titleController = TextEditingController();
   var dateController = TextEditingController();
   var timeController = TextEditingController();
-  @override
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext cont) => To_Cubit(),
-      child: BlocConsumer(
-        listener: (BuildContext cont, state) {},
-        builder: (BuildContext cont, state) {
+      create: (BuildContext context) => To_Cubit()..creatDataBase(),
+      child: BlocConsumer<To_Cubit, To_State>(
+        listener: (BuildContext context, state) {
+          if (state is InsertDataBase_state) {
+            Navigator.pop(context);
+          }
+        },
+        builder: (BuildContext context, state) {
           return Scaffold(
             key: scafoldKey,
             appBar: AppBar(
@@ -34,22 +34,12 @@ class Home extends StatelessWidget {
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                if (isBottomSheetShown) {
+                if (To_Cubit.get(context).isBottomSheetShown) {
                   if (formKey.currentState!.validate()) {
-                    insertDataBase(
-                            date: dateController.text,
-                            time: timeController.text,
-                            title: titleController.text)
-                        .then((value) {
-                      getDataBase(dataBase).then((value) {
-                        Navigator.pop(context);
-                        // setState(() {
-                        //   taskes = value;
-                        //   fabicon = Icons.edit;
-                        //   isBottomSheetShown = false;
-                        // });
-                      });
-                    }).catchError((erroe) {});
+                    To_Cubit.get(context).insertDataBase(
+                        date: dateController.text,
+                        time: timeController.text,
+                        title: titleController.text);
                   }
                 } else {
                   scafoldKey.currentState!
@@ -128,18 +118,12 @@ class Home extends StatelessWidget {
                           ))
                       .closed
                       .then((value) {
-                    isBottomSheetShown = false;
-                    // setState(() {
-                    //   fabicon = Icons.edit;
-                    // });
+                    To_Cubit.get(context).changeBouttonSheet(false, Icons.edit);
                   });
-                  isBottomSheetShown = true;
-                  // setState(() {
-                  //   fabicon = Icons.add;
-                  // });
+                  To_Cubit.get(context).changeBouttonSheet(true, Icons.add);
                 }
               },
-              child: Icon(fabicon),
+              child: Icon(To_Cubit.get(context).fabicon),
             ),
             bottomNavigationBar: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
@@ -161,48 +145,5 @@ class Home extends StatelessWidget {
         },
       ),
     );
-  }
-
-  void creatDataBase() async {
-    dataBase =
-        await openDatabase("hr.db", version: 1, onCreate: (dataBase, version) {
-      print("Data Base Created");
-      dataBase
-          .execute(
-              'CREATE TABLE taskes (id INTEGER PRIMARY KEY,titel TEXT,date TEXT,time TEXT,status TEXT)')
-          .then((value) {
-        print("Table Created");
-      }).catchError((error) {
-        print("error when Ceated table ${error.toString()}");
-      });
-    }, onOpen: (dataBase) {
-      getDataBase(dataBase).then((value) {
-        // setState(() {
-        //   taskes = value;
-        // });
-      });
-      print("Data Base Open");
-    });
-  }
-
-  Future insertDataBase({
-    required String title,
-    required String time,
-    required String date,
-  }) async {
-    return await dataBase.transaction((txn) async {
-      txn
-          .rawInsert(
-              'INSERT INTO taskes (titel,date,time,status) VALUES("$title","$date","$time","new")')
-          .then((value) {
-        print('$value insert dada base in done');
-      }).catchError((error) {
-        print("error when insert database ${error.toString()}");
-      });
-    });
-  }
-
-  Future<List<Map>> getDataBase(dataBase) async {
-    return await dataBase.rawQuery('SELECT * FROM taskes');
   }
 }
