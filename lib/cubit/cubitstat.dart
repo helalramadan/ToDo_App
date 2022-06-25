@@ -9,3 +9,5 @@ class CreatDataBase_state extends To_State {}
 class GetDataBase_state extends To_State {}
 
 class InsertDataBase_state extends To_State {}
+
+class UpdateDataBase_state extends To_State {}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/cubit/cubit.dart';
 
 Widget defultTextFormFild({
   required TextEditingController controller,
@@ -37,32 +38,62 @@ Widget defultTextFormFild({
         border: const OutlineInputBorder(),
       ),
     );
-Widget BuildTaske(Map model) => Padding(
+Widget BuildTaske(Map model, context) => Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
         children: [
-           CircleAvatar(
-            child: Text('${model['time']}'),
+          CircleAvatar(
             radius: 40.0,
+            child: Text('${model['time']}'),
           ),
           const SizedBox(
             width: 10.0,
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children:  [
-              Text(
-                '${model['titel']}',
-                style: TextStyle(
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${model['titel']}',
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-'${model['date']}',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
+                const SizedBox(
+                  height: 8.0,
+                ),
+                Text(
+                  '${model['date']}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 10.0,
+          ),
+          IconButton(
+            iconSize: 30.0,
+            onPressed: () {
+              To_Cubit.get(context)
+                  .UpdateDataBase(status: "done", id: model["id"]);
+            },
+            icon: const Icon(
+              Icons.check_box,
+              color: Color.fromARGB(255, 0, 140, 255),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              To_Cubit.get(context)
+                  .UpdateDataBase(status: "arcived", id: model["id"]);
+            },
+            iconSize: 30.0,
+            icon: const Icon(
+              Icons.archive,
+              color: Colors.black38,
+            ),
           )
         ],
       ),

@@ -13,7 +13,9 @@ class To_Cubit extends Cubit<To_State> {
   static To_Cubit get(context) => BlocProvider.of(context);
 
   int curentindex = 0;
-  List<Map> taskes = [];
+  List<Map> newTaskes = [];
+  List<Map> doneTaskes = [];
+  List<Map> arcivedTaskes = [];
 
   late Database dataBase;
   List<Widget> Screen = [Task_Screen(), Done_Screen(), Archive_Screen()];
@@ -34,10 +36,7 @@ class To_Cubit extends Cubit<To_State> {
         print("error when Ceated table ${error.toString()}");
       });
     }, onOpen: (dataBase) {
-      getDataBase(dataBase).then((value) {
-        taskes = value;
-        emit(GetDataBase_state());
-      });
+      getDataBase(dataBase);
       print("Data Base Open");
     }).then((value) {
       dataBase = value;
@@ -49,26 +48,34 @@ class To_Cubit extends Cubit<To_State> {
     required String title,
     required String time,
     required String date,
-  }) async {
-    await dataBase.transaction((txn) async {
+  }) {
+    dataBase.transaction((txn) async {
       txn
           .rawInsert(
               'INSERT INTO taskes (titel,date,time,status) VALUES("$title","$date","$time","new")')
           .then((value) {
-        print('$value insert dada base in done');
+        print('$value insert data base in done');
         emit(InsertDataBase_state());
-        getDataBase(dataBase).then((value) {
-          taskes = value;
-          emit(GetDataBase_state());
-        });
+        getDataBase(dataBase);
       }).catchError((error) {
         print("error when insert database ${error.toString()}");
       });
     });
   }
 
-  Future<List<Map>> getDataBase(dataBase) async {
-    return await dataBase.rawQuery('SELECT * FROM taskes');
+  void getDataBase(dataBase) {
+    dataBase.rawQuery('SELECT * FROM taskes').then((value) {
+      value.forEach((Element) {
+        if (Element["status"] == "new") {
+          newTaskes.add(Element);
+        } else if (Element["status"] == "done") {
+          doneTaskes.add(Element);
+        } else {
+          arcivedTaskes.add(Element);
+        }
+      });
+      emit(GetDataBase_state());
+    });
   }
 
   bool isBottomSheetShown = false;
@@ -78,5 +85,15 @@ class To_Cubit extends Cubit<To_State> {
     isBottomSheetShown = issheet;
     fabicon = icon;
     emit(Change_state());
+  }
+
+  void UpdateDataBase({
+    required String status,
+    required int id,
+  }) {
+    dataBase.rawUpdate('UPDATE taskes SET status = ? WHERE id = ?',
+        [status, id]).then((value) {
+      emit(UpdateDataBase_state());
+    });
   }
 }
