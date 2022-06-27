@@ -64,6 +64,10 @@ class To_Cubit extends Cubit<To_State> {
   }
 
   void getDataBase(dataBase) {
+    // newTaskes = [];
+    // doneTaskes = [];
+    // arcivedTaskes = [];
+    emit(GetDataBase_state());
     dataBase.rawQuery('SELECT * FROM taskes').then((value) {
       value.forEach((Element) {
         if (Element["status"] == "new") {
@@ -74,7 +78,6 @@ class To_Cubit extends Cubit<To_State> {
           arcivedTaskes.add(Element);
         }
       });
-      emit(GetDataBase_state());
     });
   }
 
@@ -94,6 +97,16 @@ class To_Cubit extends Cubit<To_State> {
     dataBase.rawUpdate('UPDATE taskes SET status = ? WHERE id = ?',
         [status, id]).then((value) {
       emit(UpdateDataBase_state());
+      getDataBase(dataBase);
+    });
+  }
+
+  void DeletDataBase({
+    required int id,
+  }) {
+    dataBase.rawDelete('DELETE FROM taskes WHERE id = ?', [id]).then((value) {
+      emit(DeletDataBase_state());
+      getDataBase(dataBase);
     });
   }
 }

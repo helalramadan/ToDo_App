@@ -38,63 +38,69 @@ Widget defultTextFormFild({
         border: const OutlineInputBorder(),
       ),
     );
-Widget BuildTaske(Map model, context) => Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 40.0,
-            child: Text('${model['time']}'),
-          ),
-          const SizedBox(
-            width: 10.0,
-          ),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${model['titel']}',
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+Widget BuildTaske(Map model, context) => Dismissible(
+      key: Key(model["id"].toString()),
+      onDismissed: (direction) {
+        To_Cubit.get(context).DeletDataBase(id: model["id"]);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 40.0,
+              child: Text('${model['time']}'),
+            ),
+            const SizedBox(
+              width: 10.0,
+            ),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${model['titel']}',
+                    style: const TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 8.0,
-                ),
-                Text(
-                  '${model['date']}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    '${model['date']}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            width: 10.0,
-          ),
-          IconButton(
-            iconSize: 30.0,
-            onPressed: () {
-              To_Cubit.get(context)
-                  .UpdateDataBase(status: "done", id: model["id"]);
-            },
-            icon: const Icon(
-              Icons.check_box,
-              color: Color.fromARGB(255, 0, 140, 255),
+            const SizedBox(
+              width: 10.0,
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              To_Cubit.get(context)
-                  .UpdateDataBase(status: "arcived", id: model["id"]);
-            },
-            iconSize: 30.0,
-            icon: const Icon(
-              Icons.archive,
-              color: Colors.black38,
+            IconButton(
+              iconSize: 30.0,
+              onPressed: () {
+                To_Cubit.get(context)
+                    .UpdateDataBase(status: "done", id: model["id"]);
+              },
+              icon: const Icon(
+                Icons.check_box,
+                color: Color.fromARGB(255, 0, 140, 255),
+              ),
             ),
-          )
-        ],
+            IconButton(
+              onPressed: () {
+                To_Cubit.get(context)
+                    .UpdateDataBase(status: "arcived", id: model["id"]);
+              },
+              iconSize: 30.0,
+              icon: const Icon(
+                Icons.archive,
+                color: Colors.black38,
+              ),
+            )
+          ],
+        ),
       ),
     );

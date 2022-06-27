@@ -11,3 +11,5 @@ class GetDataBase_state extends To_State {}
 class InsertDataBase_state extends To_State {}
 
 class UpdateDataBase_state extends To_State {}
+
+class DeletDataBase_state extends To_State {}
