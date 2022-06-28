@@ -55,8 +55,8 @@ class To_Cubit extends Cubit<To_State> {
               'INSERT INTO taskes (titel,date,time,status) VALUES("$title","$date","$time","new")')
           .then((value) {
         print('$value insert data base in done');
-        getDataBase(dataBase);
         emit(InsertDataBase_state());
+        getDataBase(dataBase);
       }).catchError((error) {
         print("error when insert database ${error.toString()}");
       });
@@ -64,10 +64,9 @@ class To_Cubit extends Cubit<To_State> {
   }
 
   void getDataBase(dataBase) {
-    // newTaskes = [];
-    // doneTaskes = [];
-    // arcivedTaskes = [];
-    emit(GetDataBase_state());
+    newTaskes = [];
+    doneTaskes = [];
+    arcivedTaskes = [];
     dataBase.rawQuery('SELECT * FROM taskes').then((value) {
       value.forEach((Element) {
         if (Element["status"] == "new") {
@@ -78,6 +77,7 @@ class To_Cubit extends Cubit<To_State> {
           arcivedTaskes.add(Element);
         }
       });
+      emit(GetDataBase_state());
     });
   }
 
@@ -96,8 +96,8 @@ class To_Cubit extends Cubit<To_State> {
   }) {
     dataBase.rawUpdate('UPDATE taskes SET status = ? WHERE id = ?',
         [status, id]).then((value) {
-      emit(UpdateDataBase_state());
       getDataBase(dataBase);
+      emit(UpdateDataBase_state());
     });
   }
 
@@ -105,8 +105,8 @@ class To_Cubit extends Cubit<To_State> {
     required int id,
   }) {
     dataBase.rawDelete('DELETE FROM taskes WHERE id = ?', [id]).then((value) {
-      emit(DeletDataBase_state());
       getDataBase(dataBase);
+      emit(DeletDataBase_state());
     });
   }
 }
