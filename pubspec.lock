@@ -50,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.16.0"
+  conditional:
+    dependency: "direct main"
+    description:
+      name: conditional
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:

@@ -55,8 +55,8 @@ class To_Cubit extends Cubit<To_State> {
               'INSERT INTO taskes (titel,date,time,status) VALUES("$title","$date","$time","new")')
           .then((value) {
         print('$value insert data base in done');
-        emit(InsertDataBase_state());
         getDataBase(dataBase);
+        emit(InsertDataBase_state());
       }).catchError((error) {
         print("error when insert database ${error.toString()}");
       });

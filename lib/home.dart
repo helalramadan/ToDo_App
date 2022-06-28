@@ -24,6 +24,12 @@ class Home extends StatelessWidget {
         listener: (BuildContext context, state) {
           if (state is InsertDataBase_state) {
             Navigator.pop(context);
+
+            titleController = TextEditingController();
+
+            dateController = TextEditingController();
+
+            timeController = TextEditingController();
           }
         },
         builder: (BuildContext context, state) {
